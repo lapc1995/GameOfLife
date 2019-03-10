@@ -6,22 +6,20 @@ class GameOfLife extends React.Component {
         super(props);
         this.state = {
             map: null,
-            start: false,
-            map_rendering: [],
+            rectangles: []
         }
+        this.map1 = this.generateMap();
+        this.map2 = this.generateMap();
+        this.currentMap = 1;
     }
 
     render() {
-        if(this.state.start) {
-            return <div><RenderGame game={this.state.map}/></div>
-        }
-        return <div></div>
-
+        return <div><RenderGame game={this.state.rectangles}/></div>
     }
 
     componentDidMount() {
         this.setState({
-            map: this.generateMap(this.randomValue),
+            map: this.map1,
             start: true,
         });
 
@@ -36,34 +34,55 @@ class GameOfLife extends React.Component {
     }
 
     tick() {
+        var new_rectangles = [];
+        let new_map;
+        if(this.currentMap === 1 )  {
+            new_map = this.map2;
+            this.currentMap = 2;
+        } else {
+            new_map = this.map1;
+            this.currentMap = 1;
+        }
+        for(var i = 0; i < this.props.y; i++) {
+            for(var j = 0; j < this.props.x; j++) {
+                new_map[i][j] = this.gameOfLifeRules(i, j, this);
+                if(new_map[i][j] === 1) 
+                    new_rectangles.push(
+                        <Rect
+                            x={j * 10}
+                            y={i * 10}
+                            width={10}
+                            height={10}
+                            fill={"rgb(0,0,0)"}
+                        />
+                    );
+            }
+        }
         this.setState({
-            map: this.generateMap(this.gameOfLifeRules)
+            map: new_map,
+            rectangles: new_rectangles
         });
      }
 
-    generateMap(tile_function) {
+     generateMap() {
         var new_map = new Array(Number(this.props.y));
         for(var i = 0; i < this.props.y; i++) {
             new_map[i] = Array(Number(this.props.x))
             for(var j = 0; j < this.props.x; j++) {
-                new_map[i][j] = tile_function(i, j, this);
+                new_map[i][j] = Math.round(Math.random());
             }
         }
         return new_map;
     }
 
-    randomValue(i,j,t) {
-        return Math.round(Math.random());
-    }
-     
-    gameOfLifeRules(i, j, t) {
-        var neighbors = t.getNeighbors(i, j);
-        if(t.state.map[i][j] === 1) {
+    gameOfLifeRules(i, j) {
+        var neighbors = this.getNeighbors(i, j);
+        if(this.state.map[i][j] === 1) {
             if(neighbors < 2 || neighbors > 3)
                 return 0;
             else if(neighbors === 2 || neighbors === 3)
                 return  1;
-        } else if (t.state.map[i][j] === 0) {
+        } else if (this.state.map[i][j] === 0) {
             if(neighbors === 3)
                 return 1;
             else
@@ -74,60 +93,28 @@ class GameOfLife extends React.Component {
     getNeighbors(i, j) {
         var total = 0;
 
-        var up_outofbounds = (i - 1 < 0);
-        var down_outofbounds = (i + 1 >= this.props.y);
+        var up = (i - 1 < 0 ? this.props.y-1 : i - 1);
+        var down = (i + 1 >= this.props.y ? 0 : i + 1);
+        var left = (j - 1 < 0 ? this.props.x-1 : j - 1);
+        var right = (j + 1 >= this.props.x ? 0 : j + 1);
 
-        var left_outofbounds = (j - 1 < 0);
-        var right_outofbounds = (j + 1 >= this.props.x);
-
-        if(!up_outofbounds && !left_outofbounds)
-            total += this.state.map[i-1][j-1];
-
-        if(!up_outofbounds)
-            total += this.state.map[i-1][j];
-   
-        if(!up_outofbounds && !right_outofbounds)
-            total += this.state.map[i-1][j+1];
-      
-        if(!left_outofbounds)
-            total += this.state.map[i][j-1];
-
-        if(!right_outofbounds)
-            total += this.state.map[i][j+1];
-    
-        if(!down_outofbounds && !left_outofbounds)
-            total += this.state.map[i+1][j-1];
-      
-        if(!down_outofbounds)
-            total += this.state.map[i+1][j];
-      
-        if(!down_outofbounds && !right_outofbounds)
-            total += this.state.map[i+1][j+1];
-    
+       total += this.state.map[up][left];
+       total += this.state.map[up][j];
+       total += this.state.map[up][right];
+       total += this.state.map[i][left];
+       total += this.state.map[i][right];
+       total += this.state.map[down][left];
+       total += this.state.map[down][j];
+       total += this.state.map[down][right];
+  
         return total
     }
 }
 
 function RenderGame(props) {
-    var rectangles = []
-    for(var i = 0; i < props.game.length; i++) { 
-        for(var j = 0; j < props.game[i].length; j++) { 
-            var color = props.game[i][j] === 0 ? "rgb(255,255,255)" : "rgb(0,0,0)";
-            rectangles.push(
-                <Rect
-                    x={j * 10}
-                    y={i * 10}
-                    width={10}
-                    height={10}
-                    fill={color}
-                />
-            );
-        }
-    }
-  
     return(<Stage width={window.innerWidth} height={window.innerHeight}>
                 <Layer>
-                    {rectangles}
+                    {props.game}
                 </Layer>
             </Stage>)
 }
