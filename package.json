@@ -2,6 +2,7 @@
   "name": "game-of-life",
   "version": "0.1.0",
   "private": true,
+  "homepage": "http://lapc1995.github.io/GameOfLife",
   "dependencies": {
     "konva": "^3.1.7",
     "react": "^16.8.4",
@@ -13,7 +14,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -25,6 +28,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "gh-pages": "^2.0.1",
     "react-addons-perf": "^15.4.2"
   }
 }
