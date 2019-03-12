@@ -4,12 +4,11 @@
   "private": true,
   "homepage": "http://lapc1995.github.io/GameOfLife",
   "dependencies": {
-    "konva": "^3.1.7",
+    "konva": "^3.2.0",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
     "react-konva": "^16.8.4",
-    "react-scripts": "2.1.5",
-    "react-toolbox": "^2.0.0-beta.13"
+    "react-scripts": "2.1.5"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -29,7 +28,6 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "gh-pages": "^2.0.1",
-    "react-addons-perf": "^15.4.2"
+    "gh-pages": "^2.0.1"
   }
 }
